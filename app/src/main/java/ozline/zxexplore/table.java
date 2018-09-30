@@ -102,7 +102,6 @@ public class table extends AppCompatActivity{
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                Log.i("测试",String.valueOf(spinner3.getSelectedItemId()));
             }
         });
 

@@ -1,6 +1,7 @@
 package ozline.zxexplore;
 //智学网数据处理
 
+import android.text.Editable;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -18,7 +19,10 @@ public class zhixue {
     private static String js_examid; //原始考试I
     private static String js_studentsid;
     private static String js_mark;
+    private static String js_userid;
+    private static String allowopen;
 
+    public static String userid;
     public static String[] class_name; //[0]=数量
     public static String[] class_id; //[0]=数量
     public static String[] exam_name;
@@ -29,6 +33,58 @@ public class zhixue {
     //智学网cookie
     public static void setZx_cookie(String a){ //设定Cookie
         zhixue.zx_cookie=a;
+    }
+
+    public static boolean dontallowkeep() throws IOException {
+        allowopen = HtmlService.request_get("https://www.ozlinex.com/zxcheck.txt",zx_cookie);
+        Log.i("内部匿名类",allowopen);
+        if(!allowopen.contains("OK")){
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean login(Editable username, Editable passwd) throws JSONException,IOException{
+        String re;
+        String lt;
+        String execution;
+        String st;
+
+        js_userid = HtmlService.request_post("http://www.zhixue.com/weakPwdLogin/?from=web_login","loginName="+username+"&password="+passwd+"&code=","");
+        JSONObject jsonObject = new JSONObject(js_userid);
+        userid = jsonObject.getString("data");
+        Log.i("智学网登录","用户ID:"+userid); //userid
+        re = HtmlService.request_post("http://www.zhixue.com/login.jsp","decPwd=1&userId="+userid+"&password="+passwd+"&backUrl=./login.html&nextpage=./redirectIndex","");
+
+        re = HtmlService.request_get("http://open.changyan.com/sso/login/?sso_from=zhixuesso"+
+                "&service=http://www.zhixue.com:80/ssoservice.jsp"+
+                "&callback=jQuery191035885313783137995_1537716415173"+
+                "&_=1537716415174","");
+        re = re.replaceAll(" ","");
+        lt = getSubString(re, "\"lt\":\"", "\",\"exec"); //lt
+        execution = getSubString(re,"\"execution\":\"", "\"}"); //execution
+        Log.i("智学网登录","lt值:"+lt+"\n"+"execution值:"+execution);
+        re = HtmlService.request_get("http://open.changyan.com/sso/login/?sso_from=zhixuesso"+
+                "&service=http://www.zhixue.com:80/ssoservice.jsp"+
+                "&callback=jQuery191035885313783137995_1537716415173"+
+                "&username="+userid+"&password="+passwd+"&sourceappname=tkyh,tkyh&key=id&_eventId=submit&lt="+lt+"&execution="+execution+
+                "&_=1537716415175","");
+        re = re.replaceAll(" ","");
+        st = getSubString(re,"\"st\":\"", "\"}");
+        Log.i("智学网登录","st值:"+st);
+        re = HtmlService.request_post("http://www.zhixue.com/ssoservice.jsp","ation=login"+
+                "&username="+userid+
+                "&password="+passwd+
+                "&ticket="+st,"");
+        re=re.replaceAll(" ","");
+        if(re.indexOf("success")!=-1){
+            Log.i("智学网登录","登录成功!");
+            return true;
+        }else{
+            Log.i("智学网登录","登录失败!");
+            Log.i("智学网登录","返回数据:"+re);
+            return false;
+        }
     }
 
     public static boolean get_class() throws JSONException, IOException { //初始化班级数据
@@ -119,4 +175,28 @@ public class zhixue {
         }
         return marklist;
     }
+
+
+    public static String getSubString(String text, String left, String right) {
+        String result = "";
+        int zLen;
+        if (left == null || left.isEmpty()) {
+            zLen = 0;
+        } else {
+            zLen = text.indexOf(left);
+            if (zLen > -1) {
+                zLen += left.length();
+            } else {
+                zLen = 0;
+            }
+        }
+        int yLen = text.indexOf(right, zLen);
+        if (yLen < 0 || right == null || right.isEmpty()) {
+            yLen = text.length();
+        }
+        result = text.substring(zLen, yLen);
+        return result;
+    }
+
 }
+
