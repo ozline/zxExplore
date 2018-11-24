@@ -44,7 +44,7 @@ public class zhixue {
         return false;
     }
 
-    public static boolean login(Editable username, Editable passwd, Editable en_passwd) throws JSONException,IOException{
+    public static boolean login(Editable username, Editable passwd) throws JSONException,IOException{
         String re;
         String lt;
         String execution;
@@ -81,7 +81,7 @@ public class zhixue {
             //此处是智学网APP弱密码登录，PASSWORD是加密后的密码，不知道有什么方法解决，估计只能抓包了
             //好在密码不会怎么变动哈哈哈哈
             js_token=HtmlService.request_post("http://www.zhixue.com/container/app/weakCheckLogin?",
-                    "password="+en_passwd+"&loginName="+username+"&description=%7B%27encrypt%27%3A%5B%27password%27%5D%7D&deviceMac=50%3A8F%3A4C%3AFA%3AAA%3A3B&deviceId=866146033672761","");
+                    "password="+passwd+"&loginName="+username+"&description=&deviceMac=50%3A8F%3A4C%3AFA%3AAA%3A3B&deviceId=866146033672761","");
             JSONObject jtoken = new JSONObject(js_token);
             JSONObject jstoken = jtoken.getJSONObject("result");
             token=jstoken.getString("token");

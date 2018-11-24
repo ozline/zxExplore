@@ -23,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
     private Button button;
     private EditText username;
     private EditText password;
-    private EditText en_password;
     private TextView text;
     zhixue zx = new zhixue();
     @SuppressLint("SetJavaScriptEnabled")
@@ -37,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
         button = findViewById(R.id.button);
         username = findViewById(R.id.Editid);
         password = findViewById(R.id.Editpw);
-        en_password = findViewById(R.id.editpw);
         text = findViewById(R.id.textView);
 
         java.net.CookieManager manager = new java.net.CookieManager();
@@ -54,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
                         finish();
                     }
                     text.setText("正在登录账号....");
-                    zx.login(username.getText(),password.getText(),en_password.getText());
+                    zx.login(username.getText(),password.getText());
                     text.setText("正在拉取班级及考试信息.....");
                     if(zx.get_class()  && zx.get_exam()){
                         Intent intent=new Intent(MainActivity.this, table.class);
