@@ -16,7 +16,7 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.net.CookieHandler;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity { 
     static {
         System.loadLibrary("native-lib");
     }

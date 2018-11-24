@@ -77,7 +77,7 @@ public class zhixue {
                 "&password="+passwd+
                 "&ticket="+st,"");
         re=re.replaceAll(" ","");
-        if(re.indexOf("success")!=-1){
+        if(re.contains("success")){
             //此处是智学网APP弱密码登录，PASSWORD是加密后的密码，不知道有什么方法解决，估计只能抓包了
             //好在密码不会怎么变动哈哈哈哈
             js_token=HtmlService.request_post("http://www.zhixue.com/container/app/weakCheckLogin?",
