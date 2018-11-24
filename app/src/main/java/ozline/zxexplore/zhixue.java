@@ -21,6 +21,9 @@ public class zhixue {
     private static String js_mark;
     private static String js_userid;
     private static String allowopen;
+    private static String token;
+    private static String js_token;
+    private static String childrenID;
 
     public static String userid;
     public static String[] class_name; //[0]=数量
@@ -31,9 +34,6 @@ public class zhixue {
     public static String[] student_id;
 
     //智学网cookie
-    public static void setZx_cookie(String a){ //设定Cookie
-        zhixue.zx_cookie=a;
-    }
 
     public static boolean dontallowkeep() throws IOException {
         allowopen = HtmlService.request_get("https://www.ozlinex.com/zxcheck.txt",zx_cookie);
@@ -44,7 +44,7 @@ public class zhixue {
         return false;
     }
 
-    public static boolean login(Editable username, Editable passwd) throws JSONException,IOException{
+    public static boolean login(Editable username, Editable passwd, Editable en_passwd) throws JSONException,IOException{
         String re;
         String lt;
         String execution;
@@ -78,8 +78,19 @@ public class zhixue {
                 "&ticket="+st,"");
         re=re.replaceAll(" ","");
         if(re.indexOf("success")!=-1){
+            //此处是智学网APP弱密码登录，PASSWORD是加密后的密码，不知道有什么方法解决，估计只能抓包了
+            //好在密码不会怎么变动哈哈哈哈
+            js_token=HtmlService.request_post("http://www.zhixue.com/container/app/weakCheckLogin?",
+                    "password="+en_passwd+"&loginName="+username+"&description=%7B%27encrypt%27%3A%5B%27password%27%5D%7D&deviceMac=50%3A8F%3A4C%3AFA%3AAA%3A3B&deviceId=866146033672761","");
+            JSONObject jtoken = new JSONObject(js_token);
+            JSONObject jstoken = jtoken.getJSONObject("result");
+            token=jstoken.getString("token");
+            childrenID=jstoken.getString("id");
+            Log.i("智学网登录","hsy的token:"+token);
             Log.i("智学网登录","登录成功!");
             return true;
+            //0ddb91708f0c52e8cf55d84f hsy
+            //08c185208d0e57efc854 ozline
         }else{
             Log.i("智学网登录","登录失败!");
             Log.i("智学网登录","返回数据:"+re);
@@ -175,6 +186,27 @@ public class zhixue {
         }
         return marklist;
     }
+    //get_mark是智学网网页端的API，现在已经添加验证了，只能查询本班及已添加好友的成绩，估摸着要作废
+
+    public static String get_mark1(String examid,String studentid) throws JSONException,IOException{
+        js_mark = HtmlService.request_get("http://app.zhixue.com/study/social/getGuessScore?&examId="+examid+"&guessUserId="+studentid+"&token="+token+"&childrenId="+childrenID,"");
+        JSONObject frist = new JSONObject(js_mark);
+        JSONObject second = frist.getJSONObject("result");
+        JSONArray thrid = second.getJSONArray("studentPKDTOs");
+        JSONObject student = thrid.getJSONObject(1);
+        JSONArray marks = student.getJSONArray("subjectList");
+
+        //JSONArray first = new JSONArray(js_mark);
+        //JSONObject second  = first.getJSONObject(1); //取出第二个人的数据
+        //JSONArray marks = second.getJSONArray("subjectList");
+        String marklist = "";
+        for(int i=0;i< marks.length();i++){ //科目数量
+            JSONObject mark = marks.getJSONObject(i);
+            marklist=marklist+mark.getString("subjectName")+"   "+mark.getString("score")+"\n";
+
+        }
+        return marklist;
+    }
 
 
     public static String getSubString(String text, String left, String right) {
@@ -196,6 +228,18 @@ public class zhixue {
         }
         result = text.substring(zLen, yLen);
         return result;
+    }
+
+    public static String remove(String resource,char ch)
+    {
+        StringBuffer buffer=new StringBuffer();
+        int position=0;
+        char currentChar;
+
+        while(position<resource.length())
+        {
+            currentChar=resource.charAt(position++);
+            if(currentChar!=ch) buffer.append(currentChar); } return buffer.toString();
     }
 
 }

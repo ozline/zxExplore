@@ -96,7 +96,7 @@ public class table extends AppCompatActivity{
             public void onClick(View v) {
                 // TODO Auto-generated method stub
                 try {
-                    text.setText(zhixue.exam_name[Integer.valueOf(spinner.getSelectedItemPosition()+1)]+"\n\n"+ zhixue.class_name[Integer.valueOf(spinner2.getSelectedItemPosition()+1)]+"   "+zhixue.student_name[Integer.valueOf(spinner3.getSelectedItemPosition()+1)]+"\n\n"+ zhixue.get_mark(zhixue.exam_id[Integer.valueOf(spinner.getSelectedItemPosition()+1)],zhixue.student_id[Integer.valueOf(spinner3.getSelectedItemPosition()+1)]));
+                    text.setText(zhixue.exam_name[Integer.valueOf(spinner.getSelectedItemPosition()+1)]+"\n\n"+ zhixue.class_name[Integer.valueOf(spinner2.getSelectedItemPosition()+1)]+"   "+zhixue.student_name[Integer.valueOf(spinner3.getSelectedItemPosition()+1)]+"\n\n"+ zhixue.get_mark1(zhixue.exam_id[Integer.valueOf(spinner.getSelectedItemPosition()+1)],zhixue.student_id[Integer.valueOf(spinner3.getSelectedItemPosition()+1)]));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
